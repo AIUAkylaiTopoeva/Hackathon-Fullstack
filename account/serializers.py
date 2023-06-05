@@ -1,7 +1,8 @@
 from rest_framework import serializers
 # from .models import User
-# from .utils import send_activation_code
-from .tasks import send_activation_code_celery, send_forgot_activation_code_celery
+from  .utils import send_activation_code
+from .tasks import send_activation_code_celery
+# from .utils import send_forgot_activation_code_celery
 from django.core.mail import send_mail
 from django.contrib.auth import get_user_model
 
@@ -104,7 +105,7 @@ class ForgotPasswordSerializer(serializers.Serializer):
         user = User.objects.get(email=email)
         user.create_activation_code()
         user.save()
-        send_forgot_activation_code_celery.delay(user.email, user.activation_code)
+        send_activation_code_celery.delay(user.email, user.activation_code)
     
 
 class ForgotPasswordCompleteSerializer(serializers.Serializer):
