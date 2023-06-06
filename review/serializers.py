@@ -12,6 +12,11 @@ class CommentSerializer(ModelSerializer):
         user = self.context.get('request').user
         comment = Comment.objects.create(author = user, **validated_data)  # create не нужно сохронять, автомотически сохраняется. Обязательно нужно return
         return comment
+    
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['likes_count'] = instance.likes.count()
+        return representation
 
 class RatingSerializer(ModelSerializer):
     author = ReadOnlyField(source = 'author.email')
@@ -24,12 +29,12 @@ class RatingSerializer(ModelSerializer):
             raise ValidationError('rating must be in range 1-5')
         return rating
     
-    def validate_product(self, product):
-        if self.Meta.model.objects.filter(product=product).exists():
+    def validate_product(self, post):
+        if self.Meta.model.objects.filter(post=post).exists():
             raise ValidationError(
                 'Рейтинг уже поставлен'
             )
-        return product
+        return post
     
     def create(self, validated_data):
         user = self.context.get('request').user
@@ -38,7 +43,7 @@ class RatingSerializer(ModelSerializer):
 
 class LikeSerializer(ModelSerializer):
     author = ReadOnlyField(source='author.email')
-    product= ReadOnlyField()
+    post= ReadOnlyField()
 
     class Meta:
         model = Like
@@ -51,7 +56,7 @@ class LikeSerializer(ModelSerializer):
     
 class FavoriteSerializer(ModelSerializer):
     author = ReadOnlyField(source='author.email')
-    product = ReadOnlyField()
+    post = ReadOnlyField()
 
     class Meta:
         model = Favorites

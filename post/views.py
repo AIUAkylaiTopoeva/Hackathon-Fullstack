@@ -4,11 +4,14 @@ from rest_framework.permissions import IsAdminUser,AllowAny
 from rest_framework.decorators import action
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter,OrderingFilter
-
+from rest_framework.response import Response
 
 from .serializers import CategorySerializer,PostSerialiser
 from .models import Category, Post
 from .permissions import IsAdminOrActivePermission, IsOwnerPermission
+
+from review.serializers import LikeSerializer, FavoriteSerializer
+from review.models import Like, Favorites
 
 class PermissionMixin:
     def get_permissions(self):
@@ -40,32 +43,33 @@ class PostViewSet(ModelViewSet):
             self.permission_classes = [AllowAny]
         return super().get_permissions()
 
-    # @action(methods=['POST'], detail=True)
-    # def like(self, request, pk=None):
-    #     post = self.get_object()
-    #     user = request.user
-    #     try:
-    #         like = Like.objects.get(post=post,author=user)
-    #         like.delete()
-    #         message = 'disliked'
-    #     except Like.DoesNotExist:
-    #         like = Like.objects.create(post=post,author=user,is_liked =True)
-    #         like.save()
-    #         message='liked'
-    #     return Response(message, status=201)
     
+    @action(methods=['POST'], detail=True)
+    def like(self, request, pk=None):
+        post = self.get_object()
+        author = request.user
+        serializer = LikeSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            try:
+                like = Like.objects.get(post=post, author=author)
+                like.delete()
+                message  = 'disliked'
+            except Like.DoesNotExist:
+                Like.objects.create(post=post, author=author)
+                message = 'liked'
+            return Response(message, status=200)
 
-    # @action(methods=['POST'],detail=True)
-    # def like(self, request, pk=None):
-    #     product = self.get_object()
-    #     author = request.user
-    #     serializer = LikeSerializer(data=request.data)
-    #     if serializer.is_valid(raise_exception=True):
-    #         try:
-    #             like = Like.objects.get(product=product,author=author)
-    #             like.delete()
-    #             message= 'disliked'
-    #         except Like.DoesNotExist:
-    #             Like.objects.create(product=product,author=author)
-    #             message = 'liked'
-    #         return Response(message,status=200)
+    @action(methods=['POST'], detail=True)
+    def favorite(self, request, pk=None):
+        post = self.get_object()
+        author = request.user
+        serializer = FavoriteSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            try:
+                favorite = Favorites.objects.get(post=post, author=author)
+                favorite.delete()
+                message  = 'delete from favorites'
+            except Favorites.DoesNotExist:
+                Favorites.objects.create(post=post, author=author)
+                message = 'favorites to saved'
+            return Response(message, status=200)

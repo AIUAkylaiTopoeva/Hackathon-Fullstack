@@ -14,7 +14,7 @@ class Comment(models.Model):
         return self.body
 
 class Rating(models.Model):
-    product = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='ratings', verbose_name='Пост')
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='ratings', verbose_name='Пост')
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='ratings', verbose_name='Автор')
     rating = models.PositiveSmallIntegerField()
 
@@ -22,16 +22,17 @@ class Rating(models.Model):
         return self.rating
     
 class Like(models.Model):
-    product = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='likes')
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='likes')
+    comments = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name='likes')
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='likes')
 
     def __str__(self) -> str:
-        return f'{self.product} liked by {self.author.email}'
+        return f'liked by {self.author.email}'
 
 
 class Favorites(models.Model):
-    product = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='favorites')
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='favorites')
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='favorites')
     
     def __str__(self):
-        return f'{self.product.title} favorites by {self.author.name}'
+        return f'{self.post.title} favorites by {self.author.name}'
