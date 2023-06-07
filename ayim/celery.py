@@ -9,5 +9,5 @@ app.autodiscover_tasks()
 
 
 # для запуска Celery
-#python3 -m celery -A <project_name> worker-l info 
+#python3 -m celery -A <project_name> worker -l info 
 #                    <shop_api>

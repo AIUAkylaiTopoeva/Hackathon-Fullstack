@@ -1,6 +1,6 @@
 from rest_framework import serializers
 # from .models import User
-from  .utils import send_activation_code
+# from  .utils import send_activation_code
 from .tasks import send_activation_code_celery
 # from .utils import send_forgot_activation_code_celery
 from django.core.mail import send_mail
@@ -105,7 +105,8 @@ class ForgotPasswordSerializer(serializers.Serializer):
         user = User.objects.get(email=email)
         user.create_activation_code()
         user.save()
-        send_activation_code_celery.delay(user.email, user.activation_code)
+        send_mail('Восстановление пароля',f'Ваш код восстановления {user.activation_code}','test@gmail.com',[user.email])
+
     
 
 class ForgotPasswordCompleteSerializer(serializers.Serializer):
