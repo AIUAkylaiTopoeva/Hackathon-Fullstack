@@ -23,7 +23,7 @@ class Rating(models.Model):
     
 class Like(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='likes')
-    comments = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name='likes')
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name='likes')
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='likes')
 
     def __str__(self) -> str:
