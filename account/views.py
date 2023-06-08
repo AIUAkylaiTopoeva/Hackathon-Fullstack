@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
-from .serializers import RegistrSerializer,ChangePasswordSerializer,ForgotPasswordSerializer,ForgotPasswordCompleteSerializer,ActivationSerializer
+from .serializers import RegistrSerializer,ChangePasswordSerializer,ForgotPasswordSerializer,ForgotPasswordCompleteSerializer
 from rest_framework.response import Response
 from .models import User
 from drf_yasg.utils import swagger_auto_schema
@@ -18,7 +18,8 @@ class RegisterView(APIView):
         
 
 class ActivationView(APIView):
-    @swagger_auto_schema(request_body=ActivationSerializer)
+   
+   
     def get(self, request, email, activation_code):
         user = User.objects.filter(email=email,activation_code=activation_code).first()
         if not user:

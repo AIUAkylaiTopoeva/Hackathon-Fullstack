@@ -26,10 +26,7 @@ class CommentSerializer(ModelSerializer):
         comment = Comment.objects.create(author = user, **validated_data)  # create не нужно сохронять, автомотически сохраняется. Обязательно нужно return
         return comment
     
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
-        representation['likes_count'] = instance.likes.count()
-        return representation
+    
     
 class RatingSerializer(ModelSerializer):
     author = ReadOnlyField(source = 'author.username')

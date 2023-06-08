@@ -17,7 +17,7 @@ class Comment(models.Model):
 class Like(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='likes')
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='likes')
-    is_liked = models.BooleanField(default=False)
+    
 
     def __str__(self) -> str:
         return f'{self.post} liked by {self.author.username}'
