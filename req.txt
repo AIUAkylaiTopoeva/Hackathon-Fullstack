@@ -9,3 +9,4 @@ djangorestframework-simplejwt
 drf-yasg
 redis
 celery
+corsheaders
