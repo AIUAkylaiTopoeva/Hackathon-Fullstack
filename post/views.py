@@ -5,6 +5,9 @@ from rest_framework.decorators import action
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter,OrderingFilter
 from rest_framework.response import Response
+from django.views.decorators.cache import cache_page
+from django.utils.decorators import method_decorator   
+
 
 from .serializers import CategorySerializer,PostSerialiser
 from .models import Category, Post
@@ -29,6 +32,11 @@ class CategoryViewSet(ModelViewSet):
 class PostViewSet(ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerialiser
+
+    @method_decorator(cache_page(60))
+    def list(self,request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+    
     filter_backends = [DjangoFilterBackend,SearchFilter,OrderingFilter]
     filterset_fields = ['category', 'author']
     search_fields = ['title','created_at']

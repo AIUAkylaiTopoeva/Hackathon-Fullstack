@@ -25,8 +25,9 @@ class UserManager(BaseUserManager):
 
 class User(AbstractUser):
     email = models.EmailField(unique=True)
-    username = None
+    username = models.CharField(max_length=20,blank=True)
     is_active = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False)
     activation_code = models.CharField(max_length=20, blank=True)
 
     objects = UserManager()
@@ -36,11 +37,11 @@ class User(AbstractUser):
     def __str__(self) -> str:
         return f'{self.id} -> {self.email}'
     
-    # def has_module_perms(self, app_label):     #проверяет есть ли пермишн на какой-либо объект
-    #     return self.is_staff
+    def has_module_perms(self, app_label):     #проверяет есть ли пермишн на какой-либо объект
+        return self.is_staff
     
-    # def has_perm(self, perm, obj=None):
-    #     return self.is_staff
+    def has_perm(self, perm, obj=None):
+        return self.is_staff
     
     def create_activation_code(self):       #отправляется код для активации
         code = get_random_string(10, allowed_chars='1234567890!@#$%^&*()_')

@@ -8,7 +8,6 @@ from .serializers import CommentSerializer, RatingSerializer
 from .models import Comment, Rating, Like
 from .permissions import IsAuthorOrReadOnly
 from .serializers import LikeSerializer
-from post.models import Post
 
 class PermissionMixin:
     def get_permissions(self):
@@ -28,16 +27,16 @@ class CommentViewSet(PermissionMixin, ModelViewSet):
     @action(methods=['POST'], detail=True)
     def like(self, request, pk=None):
         comment = self.get_object()
-        post = comment.post  # Получаем связанный с комментарием пост
+        post = comment.post  # Получаем объект Post, связанный с комментарием
         author = request.user
         serializer = LikeSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             try:
-                like = Like.objects.get(post=post, comment=comment, author=author)  # Используем поле "comment" вместо "comments"
+                like = Like.objects.get(post=post, comment=comment, author=author)
                 like.delete()
                 message = 'disliked'
             except Like.DoesNotExist:
-                Like.objects.create(post=post, comment=comment, author=author)  # Используем поле "comment" вместо "comments"
+                Like.objects.create(post=post, comment=comment, author=author)
                 message = 'liked'
             return Response(message, status=200)
     

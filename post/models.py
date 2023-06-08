@@ -9,7 +9,7 @@ class Category(models.Model):
     slug = models.SlugField(max_length=125, unique=True,blank=True,primary_key=True)
 
     def __str__(self):
-        return self.title
+        return f'{self.title}'
     
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -27,4 +27,4 @@ class Post(models.Model):
 
 
     def __str__(self):
-        return f'{self.author.name}  -> {self.title}'
+        return f'{self.author.username}  -> {self.title}'
