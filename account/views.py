@@ -1,49 +1,66 @@
+from django.shortcuts import render
 from rest_framework.views import APIView
-from drf_yasg.utils import swagger_auto_schema
-
-from .serializers import RegistSerializer, ForgotPasswordCompleteSerializer, ForgotPasswordSerialazer, ChangePasswordSerialazer
+from .serializers import RegistrSerializer,ChangePasswordSerializer,ForgotPasswordSerializer,ForgotPasswordCompleteSerializer
 from rest_framework.response import Response
 from .models import User
-from .permissions import IsActivePermission
+from drf_yasg.utils import swagger_auto_schema
+from .permissions import IsActivePermissions
 
 
 class RegisterView(APIView):
-    @swagger_auto_schema(request_body=RegistSerializer())
+    @swagger_auto_schema(request_body=RegistrSerializer())
     def post(self, request):
         data = request.data
-        serializer = RegistSerializer(data=data)
+        serializer = RegistrSerializer(data=data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
-            return Response('Succesfully registerd', 201)
+            return Response('Successfully registered',201)
         
+
 class ActivationView(APIView):
+   
+   
     def get(self, request, email, activation_code):
-        user = User.objects.filter(email=email, activation_code=activation_code).first()
+        user = User.objects.filter(email=email,activation_code=activation_code).first()
         if not user:
-            return Response('user does not exist', 400)
+            return Response(
+                'User does not exict',400
+            )
         user.activation_code = ''
         user.is_active = True
         user.save()
-        return Response('Activated', 200)
+        return Response('Activated',200)
     
-class ForgotPasswordView(APIView):
+
+# class ActivationView(APIView):
+#     @swagger_auto_schema(request_body=ActivationSerializer())
+#     def post(self, request):
+#         serializer = ActivationSerializer(data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         serializer.activate()
+#         return Response('Аккаунт успешно активирован',status=200)
+    
+class ChangePasswordView(APIView):
+    permission_classes = (IsActivePermissions,)
+    @swagger_auto_schema(request_body=ChangePasswordSerializer())
     def post(self, request):
-        serializer = ForgotPasswordSerialazer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
+        serializer = ChangePasswordSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid(raise_exception = True):
+            serializer.set_new_password()
+            return Response('Пароль успешно обновлен')
+       
+class ForgotPasswordView(APIView):  
+    @swagger_auto_schema(request_body=ForgotPasswordSerializer()) 
+    def post(self, request):
+        serializer = ForgotPasswordSerializer(data=request.data)
+        if serializer.is_valid(raise_exception = True):
             serializer.send_verification_email()
             return Response('Мы выслали сообщение для востановления')
-        
+
 class ForgotPasswordCompleteView(APIView):
+    @swagger_auto_schema(request_body=ForgotPasswordCompleteSerializer())
     def post(self, request):
         serializer = ForgotPasswordCompleteSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
+        if serializer.is_valid(raise_exception = True):
             serializer.set_new_password()
-            return Response('password sucsessfully changed')
-
-class ChangePasswordView(APIView):
-    permission_classes = (IsActivePermission,)
-    def post(self, request):
-        serializer = ChangePasswordSerialazer(data = request.data, context={'request':request})    #context- словарь с какими-то данными, все что связано с запросами . С context можно вытаскивать ...
-        if serializer.is_valid(raise_exception=True):
-            serializer.set_new_password()
-            return Response('Status: 200. Password sucsessfuly changed')
+            return Response('Пароль успешно изменен')
