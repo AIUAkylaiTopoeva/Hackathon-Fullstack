@@ -26,17 +26,16 @@ class CommentViewSet(PermissionMixin, ModelViewSet):
 
     @action(methods=['POST'], detail=True)
     def like(self, request, pk=None):
-        comment = self.get_object()
-        post = comment.post  # Получаем объект Post, связанный с комментарием
+        post = self.get_object()
         author = request.user
         serializer = LikeSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             try:
-                like = Like.objects.get(post=post, comment=comment, author=author)
+                like = Like.objects.get(post=post, author=author)
                 like.delete()
                 message = 'disliked'
             except Like.DoesNotExist:
-                Like.objects.create(post=post, comment=comment, author=author)
+                Like.objects.create(post=post, author=author)
                 message = 'liked'
             return Response(message, status=200)
     
