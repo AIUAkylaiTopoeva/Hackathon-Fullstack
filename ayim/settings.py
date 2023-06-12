@@ -188,7 +188,7 @@ SWAGGER_SETTINGS = {
 CELERY_BROKER_URL = "redis://localhost:6379"
 CELERY_RESULT_BACKEND = "redis://localhost:6379"
 
-CORS_ALLOWED_ORIGINS = ['http://127.0.0.1:8000','http://127.0.0.1:3000']
+CORS_ALLOWED_ORIGINS = ['http://127.0.0.1:8000','http://localhost:3000']
 
 CORS_ALLOWED_METHODS = ['POST', 'GET', 'OPTIONS', 'PUT', 'PATCH', 'DELETE']
 
