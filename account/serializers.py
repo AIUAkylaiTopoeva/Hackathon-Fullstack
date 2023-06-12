@@ -44,23 +44,23 @@ class RegistrSerializer(serializers.Serializer):
 
 
 
-# class ActivationSerializer(serializers.Serializer):
-#     email = serializers.CharField()
-#     code = serializers.CharField()
+class ActivationSerializer(serializers.Serializer):
+    email = serializers.CharField()
+    code = serializers.CharField()
 
-    # def validate(self, attrs):
-    #     email = attrs.get('email')
-    #     code = attrs.get('code')
-    #     if not User.objects.filter(email=email, activation_code=code).exists(): # существует, проверяет
-    #         raise serializers.ValidationError('Пользователь найден')
-    #     return attrs
+    def validate(self, attrs):
+        email = attrs.get('email')
+        code = attrs.get('code')
+        if not User.objects.filter(email=email, activation_code=code).exists(): # существует, проверяет
+            raise serializers.ValidationError('Пользователь найден')
+        return attrs
     
-    # def activate(self):
-    #     email = self.validated_data.get('email')
-    #     user = User.objects.get(email=email)
-    #     user.is_active = True
-    #     user.activation_code = ''
-    #     user.save()
+    def activate(self):
+        email = self.validated_data.get('email')
+        user = User.objects.get(email=email)
+        user.is_active = True
+        user.activation_code = ''
+        user.save()
 
 
 class ChangePasswordSerializer(serializers.Serializer):
